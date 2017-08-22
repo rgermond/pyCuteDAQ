@@ -1,0 +1,15 @@
+#!/usr/bin/zsh
+#easy script to write the data to a specified folder in data
+
+#make a directory (in the folder data) from the commandline argument
+mkdir ./data/$1
+
+#remove all the csv files in the current directory
+#rm *.csv
+
+#call the python daq
+python3 daq.py
+
+#move all the csv files to the previously made directory
+mv *.csv ./data/$1/
+
