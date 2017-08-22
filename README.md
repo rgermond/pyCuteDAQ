@@ -17,7 +17,11 @@ This code includes several classes that can be used to acquire data from a Gantn
 
 To run the code:
 ```
-python3 main.py
+python3 main.py -a <address> -p <port> --additional arguments
 ```
 
-Scope functionality not in place yet
+To see optional arguments:
+```
+python3 main.py -h
+```
+

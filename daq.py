@@ -7,11 +7,13 @@ from scope import TAXScope
 class   DAQ:
 
 
-    def __init__(self,address,port):
+    def __init__(self, address, port, scope_on):
         self.ctrl = QGateController(address,port)
         self.udbf = UDBF()
 
-        self.n_frames = 10
+        self.scope_on = scope_on
+
+        self.n_frames = 1000
         self.n_rows   = 40e3
 
     def start(self):
@@ -23,6 +25,9 @@ class   DAQ:
 
         #get sampling frequency
         self.fs = self.udbf.SampleRate
+
+        if self.scope_on:
+            self.scope = TAXScope(self.fs, self.n_frames)
 
         #start the circular buffer
         self.ctrl.request_buffer()
@@ -48,6 +53,12 @@ class   DAQ:
                     #decode the buffer
                     self.udbf.decode_buffer(buff)
 
+                    if self.scope_on:
+                        y1 = self.udbf.data['TAXX'][-self.n_frames:]
+                        y2 = self.udbf.data['TAXY'][-self.n_frames:]
+                        y3 = self.udbf.data['TAXZ'][-self.n_frames:]
+                        self.scope.draw(y1, y2, y3)
+
                 #write to file
                 self.udbf.write_csv(filename)      #write everything but the timestamp
                 print('Wrote data to csv file: ', filename)
@@ -61,10 +72,3 @@ class   DAQ:
             self.ctrl.close()
             print('Data acquisition finished')
 
-def main():
-    #start the DAQ here
-    daq = DAQ('192.168.1.28',10000)         #probably change this too so that the IP address can be set through GUI or config file
-    daq.start()
-
-if __name__ == '__main__':
-    main()
