@@ -2,6 +2,7 @@ import time
 
 from acquire import QGateController
 from decode import UDBF
+from scope import TAXScope
 
 class   DAQ:
 

@@ -28,19 +28,3 @@ class TAXScope:
         self.line3.set_ydata(y3)
         self.fig.canvas.draw()
 
-
-def main():
-    x = np.linspace(0,6*np.pi,1000)
-
-    fs = 25000
-    n = 1000
-
-    scope = TAXScope(fs, n)
-
-    for phase in np.linspace(0,10*np.pi,100):
-        y = np.sin(x+phase)
-        scope.draw(y, y ,y)
-
-
-if __name__=='__main__':
-    main()
