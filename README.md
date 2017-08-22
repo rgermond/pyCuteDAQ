@@ -16,7 +16,6 @@ Although it should be backwards compatible with python2 this hasn't been tested.
 
 ## Usage 
 
-
 To run the code:
 ```
 python3 main.py -a <address> -p <port> --additional arguments
@@ -27,3 +26,11 @@ To see optional arguments:
 python3 main.py -h
 ```
 
+## Things to do
+
+* Implement FFT functionality
+* Implement some kind of config parser
+* Account for the sensitivity of the individual accelerometers (from the vendor calibration)
+
+* daq.py - 'n_frames/n_rows' should be changed for something more robust 
+* daq.py - 'for _ in range(4)' should be changed to make DAQ go indefinitely

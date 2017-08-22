@@ -1,10 +1,12 @@
+#standard python repository
 import struct
+import logging
 import csv
 
 class   UDBF:
 
     def __init__(self):
-        pass
+        self.logger = logging.getLogger('vib_daq.decode.UDBF')
 
     def decode_header(self,raw_head):
         #this function decodes the binary header
@@ -18,8 +20,8 @@ class   UDBF:
 
         #if the version of the UDBF file isn't 1.07 raise an error
         if self.Version != 107:
-            print(self.Version)
-            raise ValueError('UDBFheader only supports version 1.07')
+            self.logger.error('UDBF does not support version: ' + str(self.Version))
+            raise ValueError('UDBF only supports version 1.07')
 
         #get the length of the vendor name (should be 43) and make it a string
         #exclude the last character as this is just a trailing \x00
@@ -34,6 +36,7 @@ class   UDBF:
 
         #if there is additional data raise an error, not supported
         if self.ModAddDataLen != 0:
+            self.logger.error('UDBF does not support additional data in stream')
             raise ValueError('UDBFheader does not handle additional data in the header file')
 
         #get other decoding info, including sampling frequency
@@ -78,6 +81,7 @@ class   UDBF:
 
             #if there is additional data raise an error, not supported
             if self.ModAddDataLen != 0:
+                self.logger.error('UDBF does not support additional data in stream')
                 raise ValueError('UDBFheader does not handle additional data in the header file')
 
             VarStart = VarStart + nl + ul + 14
@@ -87,8 +91,11 @@ class   UDBF:
         self.var_sizes = [8] + [4 for i in range(self.VarCount)]
 
         self.data      = {}
+        self.fft      = {}
         for name in self.var_names:
             self.data[name] = []
+            self.fft[name] = []
+
 
     def decode_buffer(self,bs):
         #this function decodes the binary file

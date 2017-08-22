@@ -1,14 +1,18 @@
+#standard python repository
 import time
+import logging
 
-from acquire import QGateController
+#my classes
+from acquire import Controller
 from decode import UDBF
-from scope import TAXScope
+from scope import Scope
 
 class   DAQ:
 
-
     def __init__(self, address, port, scope_on):
-        self.ctrl = QGateController(address,port)
+
+        self.logger = logging.getLogger('vib_daq.daq.DAQ')
+        self.ctrl = Controller(address,port)
         self.udbf = UDBF()
 
         self.scope_on = scope_on
@@ -16,18 +20,22 @@ class   DAQ:
         self.n_frames = 1000
         self.n_rows   = 40e3
 
+        self.logger.info('Created DAQ successfully')
+
     def start(self):
         #get the binary header from the controller
         bin_head  = self.ctrl.acquire_head()
 
         #decode the binary header
         self.udbf.decode_header(bin_head)
+        self.logger.info('Succesfully decoded binary header')
 
         #get sampling frequency
         self.fs = self.udbf.SampleRate
 
+        #initialize the scope if necessary
         if self.scope_on:
-            self.scope = TAXScope(self.fs, self.n_frames)
+            self.scope = Scope(self.fs, self.n_frames)
 
         #start the circular buffer
         self.ctrl.request_buffer()
@@ -39,9 +47,9 @@ class   DAQ:
 
                 #generate a filename from the current time
                 stamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-                filename = stamp + '.csv'
+                filename = 'vib_fs'+ str(self.fs) + '_' + stamp + '.csv'
 
-                print('Acquiring ', str(int(self.n_rows)), ' frames of data')
+                self.logger.info('Acquiring '+ str(int(self.n_rows))+ ' frames of data')
                 for i in range(int(self.n_rows/self.n_frames)):
 
                     #pause to let the buffer fill up
@@ -52,6 +60,7 @@ class   DAQ:
 
                     #decode the buffer
                     self.udbf.decode_buffer(buff)
+                    self.logger.info('Succesfully decoded binary buffer')
 
                     if self.scope_on:
                         y1 = self.udbf.data['TAXX'][-self.n_frames:]
@@ -61,14 +70,14 @@ class   DAQ:
 
                 #write to file
                 self.udbf.write_csv(filename)      #write everything but the timestamp
-                print('Wrote data to csv file: ', filename)
+                self.logger.info('Wrote data to csv file: '+ filename)
 
         #might want to add other except blocks to catch other errors
         except KeyboardInterrupt:
-            pass
+            self.logger.info('Keyboard interrupt signal received')
         except:
             raise
         finally:
             self.ctrl.close()
-            print('Data acquisition finished')
+            self.logger.info('Data acquisition finished')
 

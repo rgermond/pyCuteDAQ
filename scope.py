@@ -1,8 +1,13 @@
+#standard python repository
+import logging
+
+#SciPy stack
 import matplotlib.pyplot as plt
 import numpy as np
 
-class TAXScope:
+class Scope:
     def __init__(self, fs, n):
+        self.logger = logging.getLogger('vib_daq.scope.Scope')
         plt.ion()
         self.fig, self.axarr = plt.subplots(3, sharex=True)
 
@@ -22,9 +27,12 @@ class TAXScope:
         self.line2, = self.axarr[1].plot(t, y, 'r.')
         self.line3, = self.axarr[2].plot(t, y, 'g.')
 
+        self.logger.debug('init method executed')
+
     def draw(self, y1, y2, y3):
         self.line1.set_ydata(y1)
         self.line2.set_ydata(y2)
         self.line3.set_ydata(y3)
         self.fig.canvas.draw()
+        self.logger.debug('draw method executed')
 
