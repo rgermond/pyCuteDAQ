@@ -2,6 +2,9 @@
 import time
 import logging
 
+#SciPy stack
+from scipy.signal import welch
+
 #my classes
 from acquire import Controller
 from decode import UDBF
@@ -9,7 +12,7 @@ from scope import Scope
 
 class   DAQ:
 
-    def __init__(self, address, port, scope_on, n_rows=40e3, n_frames=1000, n_fft=10e3):
+    def __init__(self, address, port, scope_on, n_frames=1000, n_fft=10e3):
 
         self.logger = logging.getLogger('vib_daq.daq.DAQ')
         self.ctrl = Controller(address,port)
@@ -18,7 +21,6 @@ class   DAQ:
         self.scope_on = scope_on
 
         self.n_frames = n_frames
-        self.n_rows   = n_rows
         self.n_fft    = n_fft
 
         self.logger.info('Created DAQ successfully')
@@ -50,27 +52,44 @@ class   DAQ:
                 stamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
                 filename = 'vib_fs'+ str(self.fs) + '_' + stamp + '.csv'
 
-                self.logger.info('Acquiring '+ str(int(self.n_rows))+ ' frames of data')
-                for i in range(int(self.n_rows/self.n_frames)):
+                self.logger.info('Acquiring '+ str(int(self.n_fft))+ ' frames of data')
+
+                #make dictionaries for data and psd
+                data = {name:[] for name in self.udbf.var_names}
+                psd  = {name:[] for name in self.udbf.var_names[1:]}
+
+                #for i in range(int(self.n_fft/self.n_frames)):
+                frame_count = 0
+                while frame_count < self.n_fft:
 
                     #pause to let the buffer fill up
                     time.sleep(self.n_frames/self.fs)#
 
                     #acquire the buffer
                     buff = self.ctrl.acquire_buffer(self.frame_size, self.n_frames)
+                    frame_count += self.n_frames
 
                     #decode the buffer
-                    self.udbf.decode_buffer(buff)
+                    frames = self.udbf.decode_buffer(buff)
                     self.logger.info('Succesfully decoded binary buffer')
 
+                    #add the frames to the data dict
+                    #can also potentially do conversion here
+                    for key in data:
+                        data[key] += frames[key]
+
                     if self.scope_on:
-                        y1 = self.udbf.data['TAXX'][-self.n_frames:]
-                        y2 = self.udbf.data['TAXY'][-self.n_frames:]
-                        y3 = self.udbf.data['TAXZ'][-self.n_frames:]
+                        y1 = frames['TAXX']
+                        y2 = frames['TAXY']
+                        y3 = frames['TAXZ']
                         self.scope.draw(y1, y2, y3)
 
+                #calculate psd here
+                for key in psd:
+                    freq, psd[key] = welch(data[key], fs=self.fs, nfft=self.n_fft)
+
                 #write to file
-                self.udbf.write_csv(filename)      #write everything but the timestamp
+                #self.udbf.write_csv(filename)      #write everything but the timestamp
                 self.logger.info('Wrote data to csv file: '+ filename)
 
         #might want to add other except blocks to catch other errors

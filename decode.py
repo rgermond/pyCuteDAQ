@@ -1,7 +1,6 @@
 #standard python repository
 import struct
 import logging
-import csv
 
 class   UDBF:
 
@@ -90,18 +89,14 @@ class   UDBF:
         self.var_names = ['Counter'] + self.Name
         self.var_sizes = [8] + [4 for i in range(self.VarCount)]
 
-        self.data      = {}
-        self.fft      = {}
-        for name in self.var_names:
-            self.data[name] = []
-            self.fft[name] = []
-
 
     def decode_buffer(self,bs):
         #this function decodes the binary file
         #takes the binary stream, bs and decodes it based on the number of variables and the frame size
 
         start = 0
+        data = {name:[] for name in self.var_names}
+
         while start+sum(self.var_sizes)<= len(bs):
             for i,size in enumerate(self.var_sizes):
 
@@ -112,18 +107,8 @@ class   UDBF:
                     fmt = '>f'
 
                 #store the value in the dictionary and update the start position for the next iteration
-                self.data[self.var_names[i]].append(struct.unpack(fmt,bs[start:start+size])[0])
+                data[self.var_names[i]].append(struct.unpack(fmt,bs[start:start+size])[0])
                 start += size
 
-    def write_csv(self, filename):
+        return data
 
-        with open(filename,'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=self.var_names)
-            writer.writeheader()
-
-            while self.data[self.var_names[0]]:
-                row = {}
-                for key in self.var_names:
-                    row[key] = self.data[key].pop(0)
-
-                writer.writerow(row)
