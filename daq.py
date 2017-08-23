@@ -9,7 +9,7 @@ from scope import Scope
 
 class   DAQ:
 
-    def __init__(self, address, port, scope_on):
+    def __init__(self, address, port, scope_on, n_rows=40e3, n_frames=1000, n_fft=10e3):
 
         self.logger = logging.getLogger('vib_daq.daq.DAQ')
         self.ctrl = Controller(address,port)
@@ -17,8 +17,9 @@ class   DAQ:
 
         self.scope_on = scope_on
 
-        self.n_frames = 1000
-        self.n_rows   = 40e3
+        self.n_frames = n_frames
+        self.n_rows   = n_rows
+        self.n_fft    = n_fft
 
         self.logger.info('Created DAQ successfully')
 
