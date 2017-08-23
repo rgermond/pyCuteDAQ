@@ -28,9 +28,10 @@ python3 main.py -h
 
 ## Things to do
 
-* Implement FFT functionality
-* Implement some kind of config parser
-* Account for the sensitivity of the individual accelerometers (from the vendor calibration)
+* implement some kind of config parser?
+* account for the sensitivity of the individual accelerometers (from the vendor calibration)
 
-* daq.py - 'n_frames/n_rows' should be changed for something more robust 
 * daq.py - 'for _ in range(4)' should be changed to make DAQ go indefinitely
+* improve the PSD calculation (using welch method from scipy.signal)
+* reimplement csv functionality by writing a method in the daq class that takes a dictionary and headings as input
+    - this can be used to save psd and raw traces much easier
