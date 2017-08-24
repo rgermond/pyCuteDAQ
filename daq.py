@@ -16,7 +16,7 @@ def dict_writer(filename, headers, data):
         writer = csv.DictWriter(csvfile, fieldnames=headers)
         writer.writeheader()
 
-        while data[headers[0]]:
+        while any(data[headers[0]]):
             try:
                 d = {header:data[header].pop(0) for header in headers}
                 writer.writerow(d)
@@ -28,7 +28,7 @@ def dict_writer(filename, headers, data):
 
 class   DAQ:
 
-    def __init__(self, address, port, scope_on=False, n_frames=1000, n_fft=10e3, save_raw=False, save_psd=True, convert=None):
+    def __init__(self, address, port, scope_on=False, n_frames=100, n_fft=1e3, save_raw=False, save_psd=True, convert=None):
 
         self.logger = logging.getLogger('vib_daq.daq.DAQ')
         self.ctrl = Controller(address,port)
@@ -70,7 +70,8 @@ class   DAQ:
         self.frame_size = sum(self.udbf.var_sizes)
         try:
             #loop forever while continually reading out the buffer and decoding the binary stream
-            for _ in range(4):
+            #for _ in range(4):
+            while True:
 
                 #generate a filename from the current time
                 stamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
@@ -83,12 +84,13 @@ class   DAQ:
                 data = {name:[] for name in self.udbf.var_names}
                 psd  = {name:[] for name in self.udbf.var_names[1:]}
 
+                #pause to let the buffer fill up
+                time.sleep(self.n_fft/self.fs)#
+
                 #for i in range(int(self.n_fft/self.n_frames)):
                 frame_count = 0
                 while frame_count < self.n_fft:
 
-                    #pause to let the buffer fill up
-                    time.sleep(self.n_frames/self.fs)#
 
                     #acquire the buffer
                     buff = self.ctrl.acquire_buffer(self.frame_size, self.n_frames)
@@ -104,7 +106,7 @@ class   DAQ:
                         #do the conversion if convert dict provided
                         if self.convert and self.convert[key]:
                             frames[key] = [self.convert[key]*val for val in frames[key]]
-                            self.logger.debug('Converted values: ',+key)
+                            self.logger.debug('Converted values: '+key)
                         data[key] += frames[key]
 
 
@@ -116,7 +118,8 @@ class   DAQ:
 
                 #calculate psd here
                 for key in psd:
-                    freq, psd[key] = welch(data[key], fs=self.fs, nfft=self.n_fft)
+                    freq, Pxx = welch(data[key], fs=self.fs, nfft=self.n_fft)
+                    psd[key] = list(Pxx) #convert to python list
 
                 #save the PSD
                 if self.save_psd:

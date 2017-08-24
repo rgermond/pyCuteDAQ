@@ -21,6 +21,7 @@ class Scope:
 
         #initialize the line objects
         t = np.linspace(0, n/fs, n)
+        self.logger.debug('length of t: '+str(len(t)))
         y = np.zeros(n)
 
         self.line1, = self.axarr[0].plot(t, y, 'b.')
@@ -30,9 +31,20 @@ class Scope:
         self.logger.debug('init method executed')
 
     def draw(self, y1, y2, y3):
+        self.logger.debug('length of y1: '+str(len(y1)))
+        self.logger.debug('length of y2: '+str(len(y2)))
+        self.logger.debug('length of y3: '+str(len(y3)))
+
+        #update the data of the lines
         self.line1.set_ydata(y1)
         self.line2.set_ydata(y2)
         self.line3.set_ydata(y3)
+
+        #update the plot limits
+        for ax in self.axarr:
+            ax.relim()
+            ax.autoscale()
+
         self.fig.canvas.draw()
         self.logger.debug('draw method executed')
 

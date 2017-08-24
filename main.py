@@ -69,7 +69,7 @@ def main(argv):
 
     #create stream handler
     ch = logging.StreamHandler()
-    ch.setLevel(logging.ERROR)
+    ch.setLevel(logging.DEBUG)
 
     #create formatter
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -87,6 +87,7 @@ def main(argv):
     #set up config parser
     config = configparser.ConfigParser()
     config.optionxform = str    #preserve case on import
+    config.read('vib_daq.cfg')
 
     #conversion parameters
     convert = None
