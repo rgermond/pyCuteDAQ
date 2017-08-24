@@ -32,7 +32,7 @@ def main(argv):
     #initialize default args
     address = ''
     port = ''
-    scope_on = False
+    scope = False
 
     for opt, arg in opts:
 
@@ -54,7 +54,7 @@ def main(argv):
 
         #scope functionality option
         elif opt in ('-s','--scope'):
-            scope_on = True
+            scope = True
 
 #-----------------    Setup the Logger    -----------------#
 
@@ -82,7 +82,7 @@ def main(argv):
     logger.addHandler(ch)
 
     if address and port:
-        daq = DAQ(address, port, scope_on)
+        daq = DAQ(address, port, scope_on=scope)
         logger.info('Starting DAQ')
         daq.start()
     else:

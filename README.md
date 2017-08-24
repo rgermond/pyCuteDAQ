@@ -33,5 +33,3 @@ python3 main.py -h
 
 * daq.py - 'for _ in range(4)' should be changed to make DAQ go indefinitely
 * improve the PSD calculation (using welch method from scipy.signal)
-* reimplement csv functionality by writing a method in the daq class that takes a dictionary and headings as input
-    - this can be used to save psd and raw traces much easier
