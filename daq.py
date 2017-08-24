@@ -28,7 +28,7 @@ def dict_writer(filename, headers, data):
 
 class   DAQ:
 
-    def __init__(self, address, port, scope_on=False, n_frames=1000, n_fft=10e3, save_raw=False, save_psd=True):
+    def __init__(self, address, port, scope_on=False, n_frames=1000, n_fft=10e3, save_raw=False, save_psd=True, convert=None):
 
         self.logger = logging.getLogger('vib_daq.daq.DAQ')
         self.ctrl = Controller(address,port)
@@ -38,6 +38,9 @@ class   DAQ:
         self.scope_on = scope_on
         self.save_raw = save_raw
         self.save_psd = save_psd
+
+        #optional conversion argument, either None or a dict
+        self.convert  = convert
 
         #parameters regarding the number of frames acquired and psd/file size
         self.n_frames = n_frames
@@ -96,9 +99,14 @@ class   DAQ:
                     self.logger.info('Succesfully decoded binary buffer')
 
                     #add the frames to the data dict
-                    #can also potentially do conversion here
                     for key in data:
+
+                        #do the conversion if convert dict provided
+                        if self.convert and self.convert[key]:
+                            frames[key] = [self.convert[key]*val for val in frames[key]]
+                            self.logger.debug('Converted values: ',+key)
                         data[key] += frames[key]
+
 
                     if self.scope_on:
                         y1 = frames['TAXX']
