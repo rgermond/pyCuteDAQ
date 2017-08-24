@@ -10,15 +10,16 @@ import logging
 from daq import DAQ
 
 def usage():
-    print('Usage: main.py -a <address> -p <port> --additional arguments')
+    print('Usage: main.py --additional-arguments')
     print()
-    print('Required arguments:')
-    print('-a, --address    : IPv4 address of Q.Gate')
-    print('-p, --port       : should be 10000')
+    print('Note that both long and short format arguments followed by "=" require an additional argument')
+    print('Example: main.py -a <IPv4 address> --port <port>')
     print()
-    print('Additional arguments:')
-    print('-h, --help       : display usage')
-    print('-s, --scope      : turn scope functionality on')
+    print('Options:')
+    print('-h, --help         : display usage')
+    print('-a, --address=     : IPv4 address of Q.Gate')
+    print('-p, --port=        : should be 10000')
+    print('-s, --scope        : turn scope functionality on')
 
 def main(argv):
 
