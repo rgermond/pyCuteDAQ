@@ -3,6 +3,7 @@
 
 #standard python repository
 import sys, getopt
+import configparser
 import logging
 
 #my classes
@@ -32,7 +33,7 @@ def main(argv):
     #initialize default args
     address = ''
     port = ''
-    scope = False
+    scope_on = False
 
     for opt, arg in opts:
 
@@ -54,7 +55,7 @@ def main(argv):
 
         #scope functionality option
         elif opt in ('-s','--scope'):
-            scope = True
+            scope_on = True
 
 #-----------------    Setup the Logger    -----------------#
 
@@ -81,12 +82,27 @@ def main(argv):
     logger.addHandler(fh)
     logger.addHandler(ch)
 
-    if address and port:
-        daq = DAQ(address, port, scope_on=scope)
-        logger.info('Starting DAQ')
-        daq.start()
-    else:
-        logger.error('No address/port supplied')
+#-----------------    Read Config File    -----------------#
+
+    #set up config parser
+    config = configparser.ConfigParser()
+    config.optionxform = str    #preserve case on import
+
+    #conversion parameters
+    convert = None
+    if 'convert' in config.sections():
+        convert = {key:config['convert'].getfloat(key) for key in config['convert']}
+
+    #network parameters
+    if not address:
+        address = config['network'].get('IPv4')
+    if not port:
+        port = config['network'].getint('Port')
+
+    #start the DAQ
+    daq = DAQ(address, port, scope_on=scope_on, convert=convert)
+    logger.info('Starting DAQ')
+    daq.start()
 
 if __name__ == '__main__':
     main(sys.argv[1:])
