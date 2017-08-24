@@ -16,20 +16,18 @@ Although it should be backwards compatible with python2 this hasn't been tested.
 
 ## Usage 
 
-To run the code:
+To run the code with the default settings (from the configuration file) simply use:
 ```
-python3 main.py -a <address> -p <port> --additional arguments
+python3 main.py
 ```
 
-To see optional arguments:
+To see optional arguments, eg. scope functionality:
 ```
 python3 main.py -h
 ```
 
 ## Things to do
 
-* implement some kind of config parser?
-* account for the sensitivity of the individual accelerometers (from the vendor calibration)
-
-* daq.py - 'for _ in range(4)' should be changed to make DAQ go indefinitely
 * improve the PSD calculation (using welch method from scipy.signal)
+* include cli arguments to save raw traces
+* output the full csv files to a different directory? 
