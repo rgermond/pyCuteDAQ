@@ -126,6 +126,9 @@ class   DAQ:
                     dict_writer(vibfile, self.udbf.var_names[1:], psd)
                     self.logger.info('Wrote raw trace to csv file: '+ vibfile)
 
+        except socket.timeout:
+            self.logger.error('socket timed out')
+            pass
         except:
             self.logger.error('Unexpected error occurred')
             raise
