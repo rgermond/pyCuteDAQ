@@ -9,7 +9,6 @@ from scipy.signal import welch
 #my classes
 from acquire import Controller
 from decode import UDBF
-from scope import Scope
 
 def dict_writer(filename, headers, data):
     with open(filename, 'w') as csvfile:
@@ -28,13 +27,17 @@ def dict_writer(filename, headers, data):
 
 class   DAQ:
 
-    def __init__(self, address, port, scope_on=False, n_frames=100, n_fft=1e3, save_raw=False, save_psd=True, convert=None):
+    def __init__(self, address, port, queue, scope_on=False, n_frames=100, n_fft=1e3, save_raw=False, save_psd=False, convert=None):
 
         self.logger = logging.getLogger('vib_daq.daq.DAQ')
         self.ctrl = Controller(address,port)
         self.udbf = UDBF()
 
+        #queue for storing the data
+        self.queue = queue
+
         #boolean options which dictate behaviour of DAQ
+        self.take_data= True
         self.scope_on = scope_on
         self.save_raw = save_raw
         self.save_psd = save_psd
@@ -48,8 +51,6 @@ class   DAQ:
 
         self.logger.info('Created DAQ successfully')
 
-
-    def start(self):
         #get the binary header from the controller
         bin_head  = self.ctrl.acquire_head()
 
@@ -60,18 +61,15 @@ class   DAQ:
         #get sampling frequency
         self.fs = self.udbf.SampleRate
 
-        #initialize the scope if necessary
-        if self.scope_on:
-            self.scope = Scope(self.fs, self.n_frames)
 
+    def run(self):
         #start the circular buffer
         self.ctrl.request_buffer()
 
         self.frame_size = sum(self.udbf.var_sizes)
         try:
-            #loop forever while continually reading out the buffer and decoding the binary stream
-            #for _ in range(4):
-            while True:
+            #loop until user specifies to end
+            while self.take_data:
 
                 #generate a filename from the current time
                 stamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
@@ -85,12 +83,11 @@ class   DAQ:
                 psd  = {name:[] for name in self.udbf.var_names[1:]}
 
                 #pause to let the buffer fill up
-                time.sleep(self.n_fft/self.fs)#
+                #time.sleep(self.n_fft/self.fs)
 
                 #for i in range(int(self.n_fft/self.n_frames)):
                 frame_count = 0
                 while frame_count < self.n_fft:
-
 
                     #acquire the buffer
                     buff = self.ctrl.acquire_buffer(self.frame_size, self.n_frames)
@@ -109,12 +106,10 @@ class   DAQ:
                             self.logger.debug('Converted values: '+key)
                         data[key] += frames[key]
 
-
                     if self.scope_on:
-                        y1 = frames['TAXX']
-                        y2 = frames['TAXY']
-                        y3 = frames['TAXZ']
-                        self.scope.draw(y1, y2, y3)
+                        tp = (frames['TAXX'],frames['TAXY'],frames['TAXZ'])
+                        if all(len(ls)==self.n_frames for ls in tp):
+                            self.queue.put(tp)
 
                 #calculate psd here
                 for key in psd:
@@ -131,11 +126,10 @@ class   DAQ:
                     dict_writer(vibfile, self.udbf.var_names[1:], psd)
                     self.logger.info('Wrote raw trace to csv file: '+ vibfile)
 
-        #might want to add other except blocks to catch other errors
-        except KeyboardInterrupt:
-            self.logger.info('Keyboard interrupt signal received')
         except:
+            self.logger.error('Unexpected error occurred')
             raise
+
         finally:
             self.ctrl.close()
             self.logger.info('Data acquisition finished')

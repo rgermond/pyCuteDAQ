@@ -5,9 +5,35 @@
 import sys, getopt
 import configparser
 import logging
+import threading
+import queue
 
 #my classes
 from daq import DAQ
+from scope import Scope
+
+def input_usage():
+    print('h : help')
+    print('p : pause')
+    print('q : quit')
+    print('s : toggle scope')
+
+def user_input(daq):
+    print('Enter "h" for options')
+    while True:
+        msg = input('CUTE VibDAQ> ')
+        if msg == 'q':
+            daq.take_data = False       #stop taking data
+            break
+
+        elif msg == 'h':
+            input_usage()
+
+        elif msg == 'p':
+            print('feature not implemented yet')
+
+        elif msg == 's':
+            print('feature not implemented yet')
 
 def usage():
     print('Usage: main.py --additional-arguments')
@@ -70,7 +96,7 @@ def main(argv):
 
     #create stream handler
     ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    ch.setLevel(logging.ERROR)
 
     #create formatter
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -101,10 +127,37 @@ def main(argv):
     if not port:
         port = config['network'].getint('Port')
 
-    #start the DAQ
-    daq = DAQ(address, port, scope_on=scope_on, convert=convert)
-    logger.info('Starting DAQ')
-    daq.start()
+#-----------------    Start the DAQ    -----------------#
+
+    #create queue for the scope
+    q = queue.Queue()
+
+    #create DAQ instance
+    daq = DAQ(address, port, q, scope_on=scope_on, convert=convert)
+
+    #create the scope
+    scope = Scope(daq.fs, daq.n_frames)
+
+    #create daq thread so console input can be received without blocking
+    daq_thread = threading.Thread(target=daq.run)
+    inpt_thread = threading.Thread(target=user_input,args=(daq,))
+
+    #start the threads
+    daq_thread.start()
+    inpt_thread.start()
+
+    #where the scope does stuff
+    while daq.take_data:
+
+        if scope_on:
+            if not q.empty():
+                traces = q.get()
+                scope.draw(traces)
+
+    #wait for the two threads to complete
+    inpt_thread.join()
+    daq_thread.join()
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])

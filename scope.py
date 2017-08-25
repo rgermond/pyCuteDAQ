@@ -30,15 +30,15 @@ class Scope:
 
         self.logger.debug('init method executed')
 
-    def draw(self, y1, y2, y3):
-        self.logger.debug('length of y1: '+str(len(y1)))
-        self.logger.debug('length of y2: '+str(len(y2)))
-        self.logger.debug('length of y3: '+str(len(y3)))
+    def draw(self, tp):
+        self.logger.debug('length of y1: '+str(len(tp[0])))
+        self.logger.debug('length of y2: '+str(len(tp[1])))
+        self.logger.debug('length of y3: '+str(len(tp[2])))
 
         #update the data of the lines
-        self.line1.set_ydata(y1)
-        self.line2.set_ydata(y2)
-        self.line3.set_ydata(y3)
+        self.line1.set_ydata(tp[0])
+        self.line2.set_ydata(tp[1])
+        self.line3.set_ydata(tp[2])
 
         #update the plot limits
         for ax in self.axarr:
