@@ -27,6 +27,9 @@ To see optional arguments, eg. scope functionality:
 python3 main.py -h
 ```
 
+## Features
+The DAQ includes a scope (built using matplotlib) that can display data as it comes in (currently specific to CUTE accelerometers). There is also a interactive prompt that can be used to modify the state of the DAQ during operation.
+
 ## Things to do
 
 * improve the PSD calculation (using welch method from scipy.signal)

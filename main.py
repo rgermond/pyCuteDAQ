@@ -34,7 +34,7 @@ def user_input(daq):
             print('feature not implemented yet')
 
         elif msg == 's':
-            print('feature not implemented yet')
+            daq.scope_on = not daq.scope_on
 
 def usage():
     print('Usage: main.py --additional-arguments')
@@ -169,7 +169,7 @@ def main():
     #where the scope does stuff
     while daq.take_data:
 
-        if scope_on:
+        if daq.scope_on:
 
             if scope is None:
                 #create the scope
@@ -178,6 +178,10 @@ def main():
             if not q.empty():
                 traces = q.get()
                 scope.draw(traces)
+        else:
+            if scope is not None:
+                scope.close()
+                scope = None
 
     #wait for the two threads to complete
     inpt_thread.join()

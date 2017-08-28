@@ -48,3 +48,6 @@ class Scope:
         self.fig.canvas.draw()
         self.logger.debug('draw method executed')
 
+    def close(self):
+        plt.close()
+
