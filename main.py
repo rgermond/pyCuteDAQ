@@ -166,7 +166,8 @@ def main():
     daq_thread.start()
     inpt_thread.start()
 
-    #where the scope does stuff
+#-----------------    Control Scope    -----------------#
+
     while daq.take_data:
 
         if daq.scope_on:
@@ -183,7 +184,8 @@ def main():
                 scope.close()
                 scope = None
 
-    #wait for the two threads to complete
+#-----------------    Join Threads    -----------------#
+
     inpt_thread.join()
     daq_thread.join()
 
