@@ -3,6 +3,7 @@
 
 #standard python repository
 import sys, getopt
+import os, shutil
 import configparser
 import logging
 import threading
@@ -47,11 +48,30 @@ def usage():
     print('-p, --port=        : should be 10000')
     print('-s, --scope        : turn scope functionality on')
 
-def main(argv):
+
+def main():
+
+#----------------    Path Related Things    ----------------#
+
+    #make the relavent full paths
+    cwd = os.getcwd()
+    daq_path = sys.path[0]
+    data_path = os.path.join(daq_path, 'data')
+    vib_path = os.path.join(data_path, 'vib')
+    psd_path = os.path.join(data_path, 'psd')
+
+    #create the paths if they dont already exist
+    if not os.path.exists(data_path):
+        os.mkdir(data_path)
+    if not os.path.exists(vib_path):
+        os.mkdir(vib_path)
+    if not os.path.exists(psd_path):
+        os.mkdir(psd_path)
 
 #----------------    Parse CLi Arguments    ----------------#
+
     try:
-        opts, args = getopt.getopt(argv, 'hsa:p:', ['help','scope','address=','port='])
+        opts, args = getopt.getopt(sys.argv[1:], 'hsa:p:', ['help','scope','address=','port='])
 
     except getopt.GetoptError:
         usage()
@@ -61,6 +81,7 @@ def main(argv):
     address = ''
     port = ''
     scope_on = False
+    scope = None
 
     for opt, arg in opts:
 
@@ -91,7 +112,8 @@ def main(argv):
     logger.setLevel(logging.DEBUG)
 
     #create file handler
-    fh = logging.FileHandler('vib_daq.log')
+    log_file = os.path.join(daq_path,'vib_daq.log')
+    fh = logging.FileHandler(log_file)
     fh.setLevel(logging.DEBUG)
 
     #create stream handler
@@ -114,7 +136,8 @@ def main(argv):
     #set up config parser
     config = configparser.ConfigParser()
     config.optionxform = str    #preserve case on import
-    config.read('vib_daq.cfg')
+    cfg_file = os.path.join(daq_path,'vib_daq.cfg')
+    config.read(cfg_file)
 
     #conversion parameters
     convert = None
@@ -135,9 +158,6 @@ def main(argv):
     #create DAQ instance
     daq = DAQ(address, port, q, scope_on=scope_on, convert=convert)
 
-    #create the scope
-    scope = Scope(daq.fs, daq.n_frames)
-
     #create daq thread so console input can be received without blocking
     daq_thread = threading.Thread(target=daq.run)
     inpt_thread = threading.Thread(target=user_input,args=(daq,))
@@ -150,6 +170,11 @@ def main(argv):
     while daq.take_data:
 
         if scope_on:
+
+            if scope is None:
+                #create the scope
+                scope = Scope(daq.fs, daq.n_frames)
+
             if not q.empty():
                 traces = q.get()
                 scope.draw(traces)
@@ -158,6 +183,19 @@ def main(argv):
     inpt_thread.join()
     daq_thread.join()
 
+#-----------------    Clean Up Files    -----------------#
+
+    #loop through the files in the daq directory
+    files = os.listdir(cwd)
+    for f in files:
+        if f.startswith('vib_') and f.endswith('.csv'):
+            src = os.path.join(cwd,f)
+            dst = os.path.join(vib_path,f)
+            os.rename(src,dst)
+        elif f.startswith('psd_') and f.endswith('.csv'):
+            src = os.path.join(cwd,f)
+            dst = os.path.join(psd_path,f)
+            os.rename(src,dst)
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()

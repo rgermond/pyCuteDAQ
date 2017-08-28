@@ -27,7 +27,7 @@ def dict_writer(filename, headers, data):
 
 class   DAQ:
 
-    def __init__(self, address, port, queue, scope_on=False, n_frames=100, n_fft=1e3, save_raw=False, save_psd=False, convert=None):
+    def __init__(self, address, port, queue, scope_on=False, n_frames=100, n_fft=1e3, save_raw=False, save_psd=True, convert=None):
 
         self.logger = logging.getLogger('vib_daq.daq.DAQ')
         self.ctrl = Controller(address,port)
@@ -72,9 +72,9 @@ class   DAQ:
             while self.take_data:
 
                 #generate a filename from the current time
-                stamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-                vibfile = 'vib_fs'+ str(self.fs) + '_' + stamp + '.csv'
-                psdfile = 'psd_fs'+ str(self.fs) + '_' + stamp + '.csv'
+                stamp = time.strftime('%y%m%d_%H%M%S', time.localtime())
+                vibfile = 'vib_fs'+ str(int(self.fs)) + '_' + stamp + '.csv'
+                psdfile = 'psd_fs'+ str(int(self.fs)) + '_' + stamp + '.csv'
 
                 self.logger.info('Acquiring '+ str(int(self.n_fft))+ ' frames of data')
 

@@ -15,9 +15,14 @@ class   Controller:
         self.sckt    = socket.socket()
         self.sckt.settimeout(10)         #set the socket timeout
 
-        #connect the socket to the appropriate address/port
-        self.sckt.connect((self.address,self.port))
-        self.logger.info('Connected to Q.Gate at: '+ self.address + ' ' + str(self.port))
+        try:
+            #connect the socket to the appropriate address/port
+            self.sckt.connect((self.address,self.port))
+            self.logger.info('Connected to Q.Gate at: '+ self.address + ' ' + str(self.port))
+
+        except socket.timeout:
+            self.logger.error('Could not connect')
+            raise
 
         #pause for a few seconds so the greeting messages can pileup
         time.sleep(2)
