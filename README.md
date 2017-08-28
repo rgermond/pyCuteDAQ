@@ -20,7 +20,7 @@ To run the code with the default settings (from the configuration file) simply u
 ```
 python3 main.py
 ```
-_ Note that the DAQ can be called from any directory _
+_Note that the DAQ can be called from any directory_
 
 To see optional arguments, eg. scope functionality:
 ```
