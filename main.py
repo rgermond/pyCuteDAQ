@@ -3,7 +3,7 @@
 
 #standard python repository
 import sys, getopt
-import os, shutil
+import os
 import configparser
 import logging
 import threading
