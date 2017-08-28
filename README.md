@@ -20,6 +20,7 @@ To run the code with the default settings (from the configuration file) simply u
 ```
 python3 main.py
 ```
+_ Note that the DAQ can be called from any directory _
 
 To see optional arguments, eg. scope functionality:
 ```
@@ -29,6 +30,4 @@ python3 main.py -h
 ## Things to do
 
 * improve the PSD calculation (using welch method from scipy.signal)
-* add some way of breaking out from the main loop cleanly?
 * include cli arguments to save raw traces
-* output the full csv files to a different directory? 
