@@ -50,6 +50,16 @@ def usage():
 
 
 def main():
+    """
+    Main file to be executed for the vibration DAQ used for CUTE
+    It import the DAQ and Scope classes and modifies their behaviour using multiple threads
+    This file handles path related things so that the script can be called and the appropriate configuration and log files are found.
+    It parses command line arguments that can modify the DAQ and Scope functionality
+    It creates the DAQ object, starts its run method in a seperate thread.
+    Passes the DAQ object to the user_input function and starts that process in another thread.
+    The Scope object is managed in the main thread as GUI components must be in the main thread.
+    When the quit option is passed to the main thread all the threads join.
+    """
 
 #----------------    Path Related Things    ----------------#
 
@@ -83,6 +93,7 @@ def main():
     scope_on = False
     scope = None
 
+    #loop through all of the arguments
     for opt, arg in opts:
 
         #help option
@@ -186,12 +197,13 @@ def main():
 
 #-----------------    Join Threads    -----------------#
 
+    #wait for the process to complete, blocks the main process
     inpt_thread.join()
     daq_thread.join()
 
 #-----------------    Clean Up Files    -----------------#
 
-    #loop through the files in the daq directory
+    #loop through the files in the daq directory, moving csv files with the correct formatting to the data directory
     files = os.listdir(cwd)
     for f in files:
         if f.startswith('vib_') and f.endswith('.csv'):

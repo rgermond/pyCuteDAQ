@@ -3,12 +3,32 @@ import struct
 import logging
 
 class   UDBF:
+    """
+    The UDBF class decodes the version 1.07 of the Universal Data Bin File format, as specified by Gantner Instruments.
+    UDBF provides methods that decodes the various binary streams sent by a Gantner Instruments Q.Gate IP controller,
+    Header information is stored in the instance, meaning a call to decode_header must be made before subsequent calls to decode_buffer
+    """
 
     def __init__(self):
+        """
+        __init__ - creates and instance of the UDBF class, starts the logger
+            args:
+                nothing
+            returns:
+                nothing
+        """
         self.logger = logging.getLogger('vib_daq.udbf.UDBF')
 
     def decode_header(self,raw_head):
-        #this function decodes the binary header
+        """
+        decode_header - decodes the binary header from the controller
+            args:
+                raw_head - (bytes) - binary stream
+            returns:
+                nothing
+
+        """
+
         self.rh = raw_head
         self.ba = bytearray(raw_head)
 
@@ -49,6 +69,7 @@ class   UDBF:
         #set up parameters to loop through the variable settings
         VarStart = VenEnd + 39
 
+        #arrays that will be appended to
         self.NameLen        = []
         self.Name           = []
         self.DataDirection  = []
@@ -59,6 +80,7 @@ class   UDBF:
         self.Unit           = []
         self.AddDataLen     = []
 
+        #for reach variable
         for var in range(self.VarCount):
 
             #loop over each variable as specified by VarCount and get the corresponding fields
@@ -91,13 +113,21 @@ class   UDBF:
 
 
     def decode_buffer(self,bs):
-        #this function decodes the binary file
-        #takes the binary stream, bs and decodes it based on the number of variables and the frame size
+        """
+        decode_buffer - decodes the binary stream from the controller based on information in the header
+            args:
+                bs - (bytes) - binary stream
+            returns:
+                data - (dict) - dictionary where keys correspond to sensor names and values are arrays of the sensors' values
+
+        """
 
         start = 0
         data = {name:[] for name in self.var_names}
 
+        #loop over bytes in the byte array until the end
         while start+sum(self.var_sizes)<= len(bs):
+            #for each variable get its size
             for i,size in enumerate(self.var_sizes):
 
                 #determine if it is a double or a float (8 vs 4 bytes)

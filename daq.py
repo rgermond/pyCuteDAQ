@@ -11,23 +11,55 @@ from controller import Controller
 from udbf import UDBF
 
 def dict_writer(filename, headers, data):
+    """
+    dict_writer - writes a dictionary of values to a csvfile
+        args:
+            filename - (string) : name of the file to write the data to
+            headers - (list) : array of strings of the key names to write to file, in the order of columns
+            data - (dict) : dictionary where keys are strings, and values are array of values to be written to file
+        returns:
+            nothing
+
+    """
     with open(filename, 'w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=headers)
         writer.writeheader()
 
+        #while there is data in the first column
         while any(data[headers[0]]):
             try:
+                #make a dictionary containing the row
                 d = {header:data[header].pop(0) for header in headers}
                 writer.writerow(d)
 
             except IndexError:
+                #unless the array is empty, break the while loop
                 break
             except:
+                #any other errors raise normally
                 raise
 
 class   DAQ:
+    """
+    The DAQ class sets up the Controller and UDBF classes and allows for the sensors to be read out, and their values to be read out
+    """
 
     def __init__(self, address, port, queue, scope_on=False, n_frames=100, n_fft=1e3, save_raw=False, save_psd=True, convert=None):
+        """
+        __init__ - creates and instance of the DAQ class, starts the logger
+            args:
+                address - (string) : string containing the IPv4 address of the controller, eg. '192.168.1.28'
+                port - (int) : port number the controller is on, eg. 10000
+                queue - (Queue) : queue object to write the data to in a thread safe way
+                n_frames - (int) : number of frames to acquire each time the circular buffer is read out
+                n_fft - (int) : number of frames in each PSD and CSV file
+                scope_on - (bool) : boolean flag to specify if the scope is being used, if so puts the decoded frames in the queue
+                save_raw - (bool) : boolean flag to specify if the raw traces (converted if conversions provided) are saved to a CSV file
+                save_psd - (bool) : boolean flag to specify if the psd (converted if conversions provided) are saved to a CSV file
+                convert - (None or dict) : optional parameter to pass that gives a conversion for variables if the key matches the controller
+            returns:
+                nothing
+        """
 
         self.logger = logging.getLogger('vib_daq.daq.DAQ')
         self.ctrl = Controller(address,port)
@@ -63,6 +95,14 @@ class   DAQ:
 
 
     def run(self):
+        """
+        run - starts the daq by requesting the circular buffer, then continually reading it out until the take_data flag is False
+              also writes the data to CSV files if specified and puts values for the scope in a thread safe queue
+            args:
+                nothing
+            returns:
+                nothing
+        """
         #start the circular buffer
         self.ctrl.request_buffer()
 

@@ -6,10 +6,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class Scope:
+    """
+    Scope class wraps a matplotlib.pyplot figure and acts as an interactive plotting tool
+    """
     def __init__(self, fs, n):
+        """
+        __init__ - creates and instance of the Scope class, starts the logger
+            args:
+                fs - (number) - "sampling frequency" of the scope
+                n - (int) - number of points in the scope
+            returns:
+                nothing
+        """
+
         self.logger = logging.getLogger('vib_daq.scope.Scope')
-        plt.ion()
-        self.fig, self.axarr = plt.subplots(3, sharex=True)
+        plt.ion()       #turn interactive plotting on
+        self.fig, self.axarr = plt.subplots(3, sharex=True)     #set up subplots
 
         #setup appearance of figure
         self.fig.suptitle('CUTE Triaxial Accelerometers', fontsize=16, fontweight='bold')
@@ -24,6 +36,7 @@ class Scope:
         self.logger.debug('length of t: '+str(len(t)))
         y = np.zeros(n)
 
+        #make line objects
         self.line1, = self.axarr[0].plot(t, y, 'b.')
         self.line2, = self.axarr[1].plot(t, y, 'r.')
         self.line3, = self.axarr[2].plot(t, y, 'g.')
@@ -31,6 +44,13 @@ class Scope:
         self.logger.debug('init method executed')
 
     def draw(self, tp):
+        """
+        draw - updates the plot with values obtained from the DAQ
+            args:
+                tp - (tuple) - 3-tuple of arrays of values, the values then get plotted on the corresponding subplot
+            returns:
+                nothing
+        """
         self.logger.debug('length of y1: '+str(len(tp[0])))
         self.logger.debug('length of y2: '+str(len(tp[1])))
         self.logger.debug('length of y3: '+str(len(tp[2])))
@@ -45,9 +65,17 @@ class Scope:
             ax.relim()
             ax.autoscale()
 
+        #redraw the plot space, not window
         self.fig.canvas.draw()
         self.logger.debug('draw method executed')
 
     def close(self):
+        """
+        close - closes the plot
+            args:
+                nothing
+            returns:
+                nothing
+        """
         plt.close()
 
