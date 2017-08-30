@@ -12,7 +12,7 @@ from udbf import UDBF
 
 def dict_writer(filename, headers, data):
     """
-    dict_writer - writes a dictionary of values to a csvfile
+    writes a dictionary of values to a csvfile
         args:
             filename - (string) : name of the file to write the data to
             headers - (list) : array of strings of the key names to write to file, in the order of columns
@@ -46,7 +46,7 @@ class   DAQ:
 
     def __init__(self, address, port, queue, scope_on=False, n_frames=100, n_fft=1e3, save_raw=False, save_psd=True, convert=None):
         """
-        __init__ - creates and instance of the DAQ class, starts the logger
+        creates and instance of the DAQ class, starts the logger
             args:
                 address - (string) : string containing the IPv4 address of the controller, eg. '192.168.1.28'
                 port - (int) : port number the controller is on, eg. 10000
@@ -96,7 +96,7 @@ class   DAQ:
 
     def run(self):
         """
-        run - starts the daq by requesting the circular buffer, then continually reading it out until the take_data flag is False
+        starts the daq by requesting the circular buffer, then continually reading it out until the take_data flag is False
               also writes the data to CSV files if specified and puts values for the scope in a thread safe queue
             args:
                 nothing

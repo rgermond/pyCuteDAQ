@@ -49,6 +49,20 @@ CUTE VibDAQ>
 ```
 This prompt is used to control the state of the DAQ during operation. It is used to terminate the DAQs execution, and can do things like toggle the scope on and off. To see a list of commands that can be used, type 'h' or '?' or 'help' at the prompt and press enter.
 
+## Help
+The documentation for each function is found within the class. The python help feature can be used to inspect the objects by calling the help.py script with the interactive interpreter flag:
+```
+python3 -i help.py
+```
+And then at the python interpreter use:
+```
+>>> help(DAQ)               #help with DAQ class
+>>> help(Scope)             #help with Scope class
+>>> help(Controller)        #help with Controller class
+>>> help(UDBF)              #help with UDBF class
+>>> help(main)              #help with main executable
+```
+
 ## Features
 The DAQ includes the following features:
 * Application wide logging to: 'vib_daq.log'

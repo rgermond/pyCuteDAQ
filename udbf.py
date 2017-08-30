@@ -11,7 +11,7 @@ class   UDBF:
 
     def __init__(self):
         """
-        __init__ - creates and instance of the UDBF class, starts the logger
+        creates and instance of the UDBF class, starts the logger
             args:
                 nothing
             returns:
@@ -21,7 +21,7 @@ class   UDBF:
 
     def decode_header(self,raw_head):
         """
-        decode_header - decodes the binary header from the controller
+        decodes the binary header from the controller
             args:
                 raw_head - (bytes) - binary stream
             returns:
@@ -114,7 +114,7 @@ class   UDBF:
 
     def decode_buffer(self,bs):
         """
-        decode_buffer - decodes the binary stream from the controller based on information in the header
+        decodes the binary stream from the controller based on information in the header
             args:
                 bs - (bytes) - binary stream
             returns:

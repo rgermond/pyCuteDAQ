@@ -11,7 +11,7 @@ class   Controller:
 
     def __init__(self,address,port):
         """
-        __init__ - constructs a TCP socket using IPv4 protocols with the controller, starts the logger
+        constructs a TCP socket using IPv4 protocols with the controller, starts the logger
             args:
                 address - (string) : string containing the IPv4 address of the controller, eg. '192.168.1.28'
                 port - (int) : port number the controller is on, eg. 10000
@@ -45,7 +45,7 @@ class   Controller:
 
     def acquire_head(self):
         """
-        acquire_head - sends a request to the Gantner controller to provide the binary header, reads out that header, and returns the bytestring
+        sends a request to the Gantner controller to provide the binary header, reads out that header, and returns the bytestring
             args:
                 nothing
             returns:
@@ -66,7 +66,7 @@ class   Controller:
 
     def request_buffer(self):
         """
-        request_buffer - sends a request over the socket to the Gantner controller to start filling the circular buffer
+        sends a request over the socket to the Gantner controller to start filling the circular buffer
             args:
                 nothing
             returns:
@@ -81,7 +81,7 @@ class   Controller:
 
     def acquire_buffer(self,frame_size,n_frames):
         """
-        acquire_buffer - receives the circular buffer data from the controller over the socket
+        receives the circular buffer data from the controller over the socket
             args:
                 frame_size - (int) : number of bytes in a single frame (including timestamp)
                 n_frames - (int) : number of frames to read out from the controller, semi arbitrary, eg. 1000
@@ -96,7 +96,7 @@ class   Controller:
 
     def close(self):
         """
-        close - closes the connection with the controller
+        closes the connection with the controller
             args:
                 nothing
             returns:

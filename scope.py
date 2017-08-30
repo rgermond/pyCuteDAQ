@@ -11,7 +11,7 @@ class Scope:
     """
     def __init__(self, fs, n):
         """
-        __init__ - creates and instance of the Scope class, starts the logger
+        creates and instance of the Scope class, starts the logger
             args:
                 fs - (number) - "sampling frequency" of the scope
                 n - (int) - number of points in the scope
@@ -45,7 +45,7 @@ class Scope:
 
     def draw(self, tp):
         """
-        draw - updates the plot with values obtained from the DAQ
+        updates the plot with values obtained from the DAQ
             args:
                 tp - (tuple) - 3-tuple of arrays of values, the values then get plotted on the corresponding subplot
             returns:
@@ -71,7 +71,7 @@ class Scope:
 
     def close(self):
         """
-        close - closes the plot
+        closes the plot
             args:
                 nothing
             returns:
