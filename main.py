@@ -27,7 +27,7 @@ def user_input(daq):
             daq.take_data = False       #stop taking data
             break
 
-        elif msg == 'h':
+        elif msg in ['h','?','help']:
             input_usage()
 
         elif msg == 'p':
