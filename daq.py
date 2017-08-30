@@ -7,8 +7,8 @@ import logging
 from scipy.signal import welch
 
 #my classes
-from acquire import Controller
-from decode import UDBF
+from controller import Controller
+from udbf import UDBF
 
 def dict_writer(filename, headers, data):
     with open(filename, 'w') as csvfile:

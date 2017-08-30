@@ -5,7 +5,7 @@ import logging
 class   UDBF:
 
     def __init__(self):
-        self.logger = logging.getLogger('vib_daq.decode.UDBF')
+        self.logger = logging.getLogger('vib_daq.udbf.UDBF')
 
     def decode_header(self,raw_head):
         #this function decodes the binary header

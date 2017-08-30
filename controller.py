@@ -7,7 +7,7 @@ class   Controller:
 
     def __init__(self,address,port):
 
-        self.logger = logging.getLogger('vib_daq.acquire.Controller')
+        self.logger = logging.getLogger('vib_daq.controller.Controller')
         self.address = address
         self.port    = port
 
