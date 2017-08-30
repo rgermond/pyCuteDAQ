@@ -1,1 +1,0 @@
-# CuteDAQ Developer's Guide
