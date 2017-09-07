@@ -1,3 +1,5 @@
+#!/usr/bin/python3 -i
+
 #standard python repository
 from pydoc import help
 

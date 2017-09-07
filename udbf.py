@@ -12,6 +12,7 @@ class   UDBF:
     def __init__(self):
         """
         creates and instance of the UDBF class, starts the logger
+
             args:
                 nothing
             returns:
@@ -22,8 +23,9 @@ class   UDBF:
     def decode_header(self,raw_head):
         """
         decodes the binary header from the controller
+
             args:
-                raw_head - (bytes) - binary stream
+                raw_head - (bytes) : binary stream
             returns:
                 nothing
 
@@ -116,9 +118,9 @@ class   UDBF:
         """
         decodes the binary stream from the controller based on information in the header
             args:
-                bs - (bytes) - binary stream
+                bs - (bytes) : binary stream
             returns:
-                data - (dict) - dictionary where keys correspond to sensor names and values are arrays of the sensors' values
+                data - (dict) : dictionary where keys correspond to sensor names and values are arrays of the sensors' values
 
         """
 

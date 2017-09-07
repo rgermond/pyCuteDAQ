@@ -12,6 +12,7 @@ class   Controller:
     def __init__(self,address,port):
         """
         constructs a TCP socket using IPv4 protocols with the controller, starts the logger
+
             args:
                 address - (string) : string containing the IPv4 address of the controller, eg. '192.168.1.28'
                 port - (int) : port number the controller is on, eg. 10000
@@ -67,6 +68,7 @@ class   Controller:
     def request_buffer(self):
         """
         sends a request over the socket to the Gantner controller to start filling the circular buffer
+
             args:
                 nothing
             returns:
@@ -82,9 +84,11 @@ class   Controller:
     def acquire_buffer(self,frame_size,n_frames):
         """
         receives the circular buffer data from the controller over the socket
+
             args:
                 frame_size - (int) : number of bytes in a single frame (including timestamp)
                 n_frames - (int) : number of frames to read out from the controller, semi arbitrary, eg. 1000
+
             returns:
                 buff - (bytes) : bytestring of length frame_size*n_frames, corresponding to the frames
         """
@@ -97,6 +101,7 @@ class   Controller:
     def close(self):
         """
         closes the connection with the controller
+
             args:
                 nothing
             returns:

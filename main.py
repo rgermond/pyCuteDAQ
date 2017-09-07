@@ -18,6 +18,8 @@ def input_usage():
     print('p : pause')
     print('q : quit')
     print('s : toggle scope')
+    print('r : toggle save raw')
+    print('f : toggle save psd')
 
 def user_input(daq):
     print('Enter "h" for options')
@@ -31,7 +33,13 @@ def user_input(daq):
             input_usage()
 
         elif msg == 'p':
-            print('feature not implemented yet')
+            daq.paused = not daq.paused
+
+        elif msg == 'r':
+            daq.save_raw = not daq.save_raw
+
+        elif msg == 'f':
+            daq.save_psd = not daq.save_psd
 
         elif msg == 's':
             daq.scope_on = not daq.scope_on
@@ -52,7 +60,7 @@ def usage():
 def main():
     """
     Main file to be executed for the vibration DAQ used for CUTE
-    It import the DAQ and Scope classes and modifies their behaviour using multiple threads
+    It imports the DAQ and Scope classes and modifies their behaviour using multiple threads
     This file handles path related things so that the script can be called and the appropriate configuration and log files are found.
     It parses command line arguments that can modify the DAQ and Scope functionality
     It creates the DAQ object, starts its run method in a seperate thread.
